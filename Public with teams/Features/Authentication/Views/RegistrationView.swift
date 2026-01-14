@@ -5,6 +5,7 @@ struct RegistrationView: View {
 	@Environment(\.dismiss) var dismiss
 	
 	var body: some View {
+		
 		VStack {
 			Form {
 				Section("Personal Details") {

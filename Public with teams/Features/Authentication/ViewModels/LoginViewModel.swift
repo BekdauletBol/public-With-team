@@ -10,6 +10,7 @@ class LoginViewModel: ObservableObject {
 	@Published var errorMessage: String?
 	@Published var showAlert = false
 	
+	
 	func login() async {
 		
 		guard !email.isEmpty, !password.isEmpty else { return }

@@ -8,6 +8,7 @@ class FeedViewModel: ObservableObject {
 	@Published var isLoading = false
 	@Published var searchText = ""
 	
+	
 	var filteredPosts: [Post] {
 		if searchText.isEmpty {
 			return posts

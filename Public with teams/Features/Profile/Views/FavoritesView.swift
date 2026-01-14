@@ -6,6 +6,7 @@ struct FavoritesView: View {
 	var body: some View {
 		NavigationStack {
 			ScrollView {
+				
 				LazyVStack(spacing: 16) {
 					if viewModel.isLoading && viewModel.favoritePosts.isEmpty {
 						ProgressView()

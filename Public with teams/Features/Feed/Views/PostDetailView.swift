@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct PostDetailView: View {
 	let post: Post
 	@Environment(\.dismiss) var dismiss

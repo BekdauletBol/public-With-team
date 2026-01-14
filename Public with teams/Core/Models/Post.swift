@@ -10,6 +10,7 @@ enum PostCategory: String, Codable, Sendable, CaseIterable {
 
 enum PostStatus: String, Codable, Sendable {
 	case available, reserved, sold
+	
 }
 
 struct Post: Codable, Identifiable, Hashable, Sendable {

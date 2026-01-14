@@ -5,6 +5,7 @@ struct MyListingsView: View {
 	
 	var body: some View {
 		ScrollView {
+			
 			LazyVStack(spacing: 16) {
 				if viewModel.isLoading && viewModel.myPosts.isEmpty {
 					ProgressView("loading your items...")
@@ -40,4 +41,5 @@ struct MyListingsView: View {
 		}
 	}
 }
+
 

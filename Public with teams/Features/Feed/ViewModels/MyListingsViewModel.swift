@@ -7,6 +7,7 @@ class MyListingsViewModel: ObservableObject {
 	@Published var isLoading = false
 	
 	func fetchMyPosts() async {
+		
 		isLoading = true
 		do {
 			self.myPosts = try await PostService.fetchMyPosts()

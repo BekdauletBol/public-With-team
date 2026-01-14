@@ -6,6 +6,7 @@ import Combine
 class UploadPostViewModel: ObservableObject {
 	// Form Fields
 	@Published var title = ""
+	
 	@Published var description = ""
 	@Published var priceString = ""
 	@Published var postType: PostType = .sell

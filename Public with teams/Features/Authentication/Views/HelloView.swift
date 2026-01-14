@@ -4,6 +4,7 @@ struct HelloView: View {
 	@AppStorage("hasSeenHello") var hasSeenHello: Bool = false
 	
 	@State private var currentIndex = 0
+	
 	@State private var opacity = 0.0
 	
 	private let greetings = ["salem.","hello.", "bonjour.", "privet.", "hola.", "public."]

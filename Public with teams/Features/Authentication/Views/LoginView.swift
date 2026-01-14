@@ -4,6 +4,7 @@ struct LoginView: View {
 	@StateObject private var viewModel = LoginViewModel()
 	
 	var body: some View {
+		
 		NavigationStack {
 			VStack(spacing: 20) {
 				Text("public.")

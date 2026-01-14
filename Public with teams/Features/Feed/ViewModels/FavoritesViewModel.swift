@@ -6,6 +6,7 @@ class FavoritesViewModel: ObservableObject {
 	@Published var favoritePosts = [Post]()
 	@Published var isLoading = false
 	
+	
 	func fetchFavorites() async {
 		isLoading = true
 		do {

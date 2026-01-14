@@ -6,6 +6,7 @@ struct FeedView: View {
 	@StateObject var viewModel = FeedViewModel()
 	
 	var body: some View {
+		
 		NavigationStack {
 			ScrollView {
 				

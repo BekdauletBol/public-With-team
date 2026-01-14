@@ -8,6 +8,7 @@ struct OnboardingView: View {
 	private let storyWords = ["welcome.", "marketplace.", "community.", "public."]
 	
 	var body: some View {
+		
 		ZStack {
 			// BACKGROUND COLOR
 			

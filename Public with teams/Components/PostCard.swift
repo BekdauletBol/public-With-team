@@ -9,6 +9,7 @@ struct PostCard: View {
 	@State private var showDeleteConfirmation = false
 	@State private var animateHeart = false 
 	
+	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 12) {
 			

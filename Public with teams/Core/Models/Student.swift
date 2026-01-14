@@ -10,6 +10,8 @@ struct Student: Codable, Identifiable, Hashable, Sendable {
 	let telegram_handle: String?
 	let avatar_url: String? 
 	let email: String
+	let is_email_visible: Bool
+	
 	
 	var fullName: String { "\(first_name) \(last_name)" }
 }

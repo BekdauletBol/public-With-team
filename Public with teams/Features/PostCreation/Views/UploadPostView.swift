@@ -5,6 +5,7 @@ struct UploadPostView: View {
 	@StateObject private var viewModel = UploadPostViewModel()
 	@Environment(\.dismiss) var dismiss
 	
+	
 	var body: some View {
 		NavigationStack {
 			Form {

@@ -5,6 +5,7 @@ struct EditProfileView: View {
 	@Environment(\.dismiss) var dismiss
 	
 	@State private var firstName = ""
+	
 	@State private var lastName = ""
 	@State private var university = ""
 	@State private var group = ""
