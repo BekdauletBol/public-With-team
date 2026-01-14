@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Xcode User Data
+xcuserdata/
+*.xcuserdatad
+*.xcscmblueprint
+
+# Firebase/Supabase (if you have local secret files)
+.env
+
+# Build folders
+DerivedData/
+build/
