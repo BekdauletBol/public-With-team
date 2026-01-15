@@ -8,21 +8,19 @@ struct ProfileView: View {
 	
 	var body: some View {
 		NavigationStack {
-			
 			ZStack {
 				Color(.systemGroupedBackground).ignoresSafeArea()
 				
 				ScrollView {
 					VStack(spacing: 24) {
-						//Header (Avatar + Name)
+						// 1. Header (Avatar + Name)
 						VStack(spacing: 12) {
 							let studentAvatarUrl = viewModel.student?.avatar_url
 							
 							PhotosPicker(selection: $selectedItem, matching: .images) {
 								if let avatarUrl = studentAvatarUrl, let url = URL(string: avatarUrl) {
 									AsyncImage(url: url) { image in
-										image.resizable()
-											.scaledToFill()
+										image.resizable().scaledToFill()
 									} placeholder: {
 										ProgressView()
 									}
@@ -32,11 +30,10 @@ struct ProfileView: View {
 									.shadow(radius: 3)
 								} else {
 									ZStack {
-										Circle()
-											.fill(Color(red: 1.0, green: 0.9, blue: 0.8)) // Alien Peach
-											.frame(width: 100, height: 100)
+										Circle().fill(Color(red: 1.0, green: 0.9, blue: 0.8))
 										Text("👻").font(.system(size: 60))
 									}
+									.frame(width: 100, height: 100)
 								}
 							}
 							.padding(.top, 20)
@@ -51,14 +48,13 @@ struct ProfileView: View {
 							
 							Text(viewModel.student?.fullName.lowercased() ?? "loading...")
 								.font(.system(size: 28, weight: .semibold, design: .rounded))
-								.foregroundColor(.primary)
 							
 							Text("\(viewModel.student?.phone_number ?? "") • @\(viewModel.student?.telegram_handle ?? "no_handle")")
 								.font(.subheadline)
 								.foregroundColor(.secondary)
 						}
 						
-						//Main Edit Button
+						// 2. Main Edit Button
 						Button {
 							showEditProfile.toggle()
 						} label: {
@@ -75,10 +71,8 @@ struct ProfileView: View {
 							.padding(.horizontal, 32)
 						}
 						
-						//Settings List
+						// 3. Settings List
 						VStack(spacing: 0) {
-							
-							// --- NEW: LINK TO ITEMS ---
 							NavigationLink {
 								MyListingsView()
 							} label: {
@@ -97,6 +91,7 @@ struct ProfileView: View {
 						.background(Color(.secondarySystemGroupedBackground))
 						.cornerRadius(12)
 						.padding(.horizontal)
+						
 						
 						// 4. Sign Out Button
 						Button(role: .destructive) {
@@ -123,7 +118,6 @@ struct ProfileView: View {
 		}
 	}
 }
-
 struct ProfileMenuRow: View {
 	let icon: String
 	let color: Color
@@ -144,6 +138,7 @@ struct ProfileMenuRow: View {
 					.foregroundColor(.secondary)
 				Text(value)
 					.font(.body)
+					.foregroundColor(.primary)
 			}
 			Spacer()
 			

@@ -5,13 +5,14 @@ struct EditProfileView: View {
 	@Environment(\.dismiss) var dismiss
 	
 	@State private var firstName = ""
-	
 	@State private var lastName = ""
 	@State private var university = ""
 	@State private var group = ""
 	@State private var phone = ""
 	@State private var telegram = ""
 	
+	// --- REQUIREMENT 1.1: STATE FOR THE TOGGLE ---
+	@State private var isEmailVisible = true
 	
 	var body: some View {
 		NavigationStack {
@@ -21,17 +22,17 @@ struct EditProfileView: View {
 					TextField("Last Name", text: $lastName)
 				}
 				
-				Section("University") {
-					TextField("University", text: $university)
-					TextField("Group", text: $group)
-				}
-				
 				Section("Contact Info") {
 					TextField("Phone", text: $phone)
 					TextField("Telegram Handle", text: $telegram)
 				}
+				
+				Section("Privacy settings.") {
+					Toggle("Show my email to others", isOn: $isEmailVisible)
+						.tint(.blue)
+				}
 			}
-			.navigationTitle("Edit Profile")
+			.navigationTitle("edit profile.")
 			.navigationBarTitleDisplayMode(.inline)
 			.toolbar {
 				ToolbarItem(placement: .topBarLeading) {
@@ -46,7 +47,8 @@ struct EditProfileView: View {
 								university: university,
 								group: group,
 								phone: phone,
-								telegram: telegram
+								telegram: telegram,
+								isEmailVisible: isEmailVisible // FIXED
 							)
 							dismiss()
 						}
@@ -55,7 +57,6 @@ struct EditProfileView: View {
 				}
 			}
 			.onAppear {
-				// Pre-fill existing data
 				if let student = viewModel.student {
 					firstName = student.first_name
 					lastName = student.last_name
@@ -63,6 +64,7 @@ struct EditProfileView: View {
 					group = student.class_group
 					phone = student.phone_number
 					telegram = student.telegram_handle ?? ""
+					isEmailVisible = student.is_email_visible 
 				}
 			}
 		}

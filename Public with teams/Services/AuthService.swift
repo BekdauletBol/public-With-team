@@ -26,8 +26,9 @@ final class AuthService: ObservableObject {
 			class_group: group,
 			phone_number: phoneNumber,
 			telegram_handle: telegramHandle,
-			avatar_url: nil, // Now works because Student is found
-			email: email
+			avatar_url: nil, 
+			email: email,
+			is_email_visible: true
 		)
 		
 		try await client.from("profiles").insert(student).execute()
@@ -36,24 +37,38 @@ final class AuthService: ObservableObject {
 		self.isNewRegistration = true
 	}
 
-	func updateUserInfo(firstName: String, lastName: String, university: String, group: String, phone: String, telegram: String) async throws {
+	func updateUserInfo(firstName: String, lastName: String, university: String, group: String, phone: String, telegram: String, isEmailVisible: Bool) async throws {
 		guard let uid = currentUser?.id else { return }
 
-		// FIXED: Using [String: String] instead of [String: Any]
-		let updatedData: [String: String] = [
-			"first_name": firstName,
-			"last_name": lastName,
-			"university": university,
-			"class_group": group,
-			"phone_number": phone,
-			"telegram_handle": telegram
-		]
+		// Define a temporary Encodable struct to match the database columns
+		struct ProfileUpdate: Encodable {
+			let first_name: String
+			let last_name: String
+			let university: String
+			let class_group: String
+			let phone_number: String
+			let telegram_handle: String
+			let is_email_visible: Bool
+		}
+
+		//Create the update object
+		let update = ProfileUpdate(
+			first_name: firstName,
+			last_name: lastName,
+			university: university,
+			class_group: group,
+			phone_number: phone,
+			telegram_handle: telegram,
+			is_email_visible: isEmailVisible
+		)
 		
+		//  Send the struct to Supabase (Swift can now encode this perfectly!)
 		try await client.from("profiles")
-			.update(updatedData)
+			.update(update)
 			.eq("id", value: uid)
 			.execute()
 		
+		// Refresh local user data
 		try await fetchCurrentUser()
 	}
 
@@ -81,6 +96,18 @@ final class AuthService: ObservableObject {
 		try await client.storage.from("avatars").upload(fileName, data: data, options: FileOptions(contentType: "image/jpeg", upsert: true))
 		let url = try client.storage.from("avatars").getPublicURL(path: fileName)
 		try await client.from("profiles").update(["avatar_url": url.absoluteString]).eq("id", value: uid).execute()
+		try await fetchCurrentUser()
+	}
+	// -> Toggle which work with visible our email
+	func updateEmailVisibility(isVisible: Bool) async throws {
+		guard let uid = currentUser?.id else { return }
+		
+		try await client.from("profiles")
+			.update(["is_email_visible": isVisible])
+			.eq("id", value: uid)
+			.execute()
+		
+		// Refresh the local user so the UI stays in sync
 		try await fetchCurrentUser()
 	}
 }

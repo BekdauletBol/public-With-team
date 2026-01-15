@@ -40,7 +40,7 @@ struct OnboardingView: View {
 						
 							// BUTTON COLORS
 							.background(Color("publicTextColor"))
-							.foregroundColor(Color("uniPrimary"))
+							.foregroundColor(Color(.white))
 							.cornerRadius(15)
 							.padding(.horizontal, 40)
 					}
