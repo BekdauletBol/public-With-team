@@ -11,8 +11,8 @@ struct EditProfileView: View {
 	@State private var phone = ""
 	@State private var telegram = ""
 	
-	// --- REQUIREMENT 1.1: STATE FOR THE TOGGLE ---
 	@State private var isEmailVisible = true
+	@State private var showContactInfo = true
 	
 	var body: some View {
 		NavigationStack {
@@ -22,15 +22,22 @@ struct EditProfileView: View {
 					TextField("Last Name", text: $lastName)
 				}
 				
+				Section("University") {
+					TextField("University", text: $university)
+					TextField("Group", text: $group)
+				}
+				
 				Section("Contact Info") {
 					TextField("Phone", text: $phone)
 					TextField("Telegram Handle", text: $telegram)
 				}
 				
-				Section("Privacy settings.") {
-					Toggle("Show my email to others", isOn: $isEmailVisible)
-						.tint(.blue)
+				// --- BOTH TOGGLES ---
+				Section("Privacy Settings") {
+					Toggle("Show email to others", isOn: $isEmailVisible)
+					Toggle("Show phone/telegram on posts", isOn: $showContactInfo)
 				}
+				.tint(.blue)
 			}
 			.navigationTitle("edit profile.")
 			.navigationBarTitleDisplayMode(.inline)
@@ -48,25 +55,28 @@ struct EditProfileView: View {
 								group: group,
 								phone: phone,
 								telegram: telegram,
-								isEmailVisible: isEmailVisible // FIXED
+								isEmailVisible: isEmailVisible,
+								
+								showContactInfo: showContactInfo
 							)
 							dismiss()
 						}
 					}
 					.fontWeight(.bold)
 				}
-			}
-			.onAppear {
-				if let student = viewModel.student {
-					firstName = student.first_name
-					lastName = student.last_name
-					university = student.university
-					group = student.class_group
-					phone = student.phone_number
-					telegram = student.telegram_handle ?? ""
-					isEmailVisible = student.is_email_visible 
-				}
-			}
-		}
-	}
-}
+			 }
+			 .onAppear {
+				 if let student = viewModel.student {
+					 firstName = student.first_name
+					 lastName = student.last_name
+					 university = student.university
+					 group = student.class_group
+					 phone = student.phone_number
+					 telegram = student.telegram_handle ?? ""
+					 isEmailVisible = student.is_email_visible
+					 showContactInfo = student.show_contact_info 
+				 }
+			 }
+		 }
+	 }
+ }

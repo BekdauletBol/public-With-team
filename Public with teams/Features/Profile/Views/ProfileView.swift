@@ -13,6 +13,7 @@ struct ProfileView: View {
 				
 				ScrollView {
 					VStack(spacing: 24) {
+						
 						// 1. Header (Avatar + Name)
 						VStack(spacing: 12) {
 							let studentAvatarUrl = viewModel.student?.avatar_url
@@ -31,7 +32,7 @@ struct ProfileView: View {
 								} else {
 									ZStack {
 										Circle().fill(Color(red: 1.0, green: 0.9, blue: 0.8))
-										Text("👻").font(.system(size: 60))
+										Text("👽").font(.system(size: 60))
 									}
 									.frame(width: 100, height: 100)
 								}
@@ -48,6 +49,7 @@ struct ProfileView: View {
 							
 							Text(viewModel.student?.fullName.lowercased() ?? "loading...")
 								.font(.system(size: 28, weight: .semibold, design: .rounded))
+								.foregroundColor(.primary)
 							
 							Text("\(viewModel.student?.phone_number ?? "") • @\(viewModel.student?.telegram_handle ?? "no_handle")")
 								.font(.subheadline)
@@ -92,6 +94,38 @@ struct ProfileView: View {
 						.cornerRadius(12)
 						.padding(.horizontal)
 						
+						// --- NEW: PRIVACY SECTION---
+						VStack(alignment: .leading, spacing: 12) {
+							Text("privacy settings.")
+								.font(.footnote)
+								.foregroundColor(.secondary)
+								.padding(.leading)
+							
+							VStack(spacing: 0) {
+								Toggle(isOn: Binding(
+									get: { viewModel.student?.show_contact_info ?? true },
+									set: { newValue in
+										Task {
+											try? await AuthService.shared.updateContactVisibility(isVisible: newValue)
+										}
+									}
+								)) {
+									HStack(spacing: 16) {
+										Image(systemName: "phone.circle.fill")
+											.foregroundColor(.white)
+											.frame(width: 30, height: 30)
+											.background(RoundedRectangle(cornerRadius: 8).fill(Color.blue))
+										
+										Text("Show contacts on posts")
+											.font(.body)
+									}
+								}
+								.padding()
+							}
+							.background(Color(.secondarySystemGroupedBackground))
+							.cornerRadius(12)
+						}
+						.padding(.horizontal)
 						
 						// 4. Sign Out Button
 						Button(role: .destructive) {
@@ -118,6 +152,7 @@ struct ProfileView: View {
 		}
 	}
 }
+
 struct ProfileMenuRow: View {
 	let icon: String
 	let color: Color

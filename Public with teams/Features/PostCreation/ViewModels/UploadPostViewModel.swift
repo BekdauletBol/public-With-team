@@ -53,6 +53,7 @@ class UploadPostViewModel: ObservableObject {
 				imageUrl = try await ImageUploader.uploadImage(image: image)
 			}
 			
+			// Inside your uploadPost() function
 			let newPost = Post(
 				id: UUID().uuidString,
 				ownerId: user.id,
@@ -61,8 +62,10 @@ class UploadPostViewModel: ObservableObject {
 				type: postType,
 				price: Double(priceString),
 				imageUrl: imageUrl,
-				phoneNumber: user.phone_number,
-				telegramHandle: user.telegram_handle,
+				// --- NEW PRIVACY LOGIC ---
+				phoneNumber: user.show_contact_info ? user.phone_number : nil,
+				telegramHandle: user.show_contact_info ? user.telegram_handle : nil,
+				// --------------------------
 				category: selectedCategory,
 				status: .available,
 				timestamp: Date()

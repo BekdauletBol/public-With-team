@@ -13,6 +13,7 @@ enum PostStatus: String, Codable, Sendable {
 	
 }
 
+
 struct Post: Codable, Identifiable, Hashable, Sendable {
 	let id: String
 	let ownerId: String
@@ -26,6 +27,7 @@ struct Post: Codable, Identifiable, Hashable, Sendable {
 	let category: PostCategory
 	var status: PostStatus
 	let timestamp: Date
+	
 	
 	enum CodingKeys: String, CodingKey {
 		case id, title, description, type, price, category, status
