@@ -4,23 +4,27 @@ import Combine
 
 @MainActor
 class UploadPostViewModel: ObservableObject {
-	// Form Fields
+	// 1. Form Fields
 	@Published var title = ""
-	
 	@Published var description = ""
 	@Published var priceString = ""
-	@Published var postType: PostType = .sell
 	@Published var selectedCategory: PostCategory = .other
-
 	
-	// Image Handling
+	@Published var postType: PostType = .sell {
+		didSet {
+			title = ""
+			description = ""
+			priceString = ""
+			postImage = nil
+			selectedItem = nil
+		}
+	}
+	
 	@Published var selectedItem: PhotosPickerItem? {
 		didSet { Task { await loadImage() } }
 	}
-	
 	@Published var postImage: UIImage?
 	
-	// UI State
 	@Published var isLoading = false
 	@Published var didUpload = false
 	
@@ -30,22 +34,25 @@ class UploadPostViewModel: ObservableObject {
 	}
 	
 	func uploadPost() async {
-		// Get the logged-in student's profile
 		guard let user = AuthService.shared.currentUser else {
-			print("DEBUG: No user logged in")
+			print("DEBUG: No user found")
 			return
 		}
 		
-		//Ensure we have an image to upload
-		guard let image = postImage else { return }
+		if postType == .sell && postImage == nil {
+			print("DEBUG: Selling requires a photo.")
+			return
+		}
 		
 		isLoading = true
 		
 		do {
-			//Upload the image first to Supabase Storage
-			let imageUrl = try await ImageUploader.uploadImage(image: image)
+			var imageUrl: String? = nil
 			
-			// Create the post object using the 'user' data including the new Telegram handle
+			if let image = postImage {
+				imageUrl = try await ImageUploader.uploadImage(image: image)
+			}
+			
 			let newPost = Post(
 				id: UUID().uuidString,
 				ownerId: user.id,
@@ -61,13 +68,11 @@ class UploadPostViewModel: ObservableObject {
 				timestamp: Date()
 			)
 			
-			//Save to Supabase
 			try await PostService.uploadPost(newPost)
-			
 			self.didUpload = true
 			
 		} catch {
-			print("DEBUG: Upload failed: \(error)")
+			print("❌ DEBUG ERROR: Upload failed: \(error.localizedDescription)")
 		}
 		
 		isLoading = false
@@ -77,6 +82,8 @@ class UploadPostViewModel: ObservableObject {
 		title = ""
 		description = ""
 		priceString = ""
+		postType = .sell
+		selectedCategory = .other
 		postImage = nil
 		selectedItem = nil
 		didUpload = false

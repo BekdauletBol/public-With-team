@@ -51,25 +51,30 @@ struct UploadPostView: View {
 					Task { await viewModel.uploadPost() }
 				} label: {
 					if viewModel.isLoading {
-						ProgressView()
+						ProgressView().tint(.white)
 					} else {
-						Text("Publish Post")
-							.fontWeight(.bold)
+						Text("Publish Post").fontWeight(.bold)
+							.foregroundStyle(Color("uniPrimary"))
 					}
 				}
 				.frame(maxWidth: .infinity)
-				.disabled(viewModel.title.isEmpty || viewModel.postImage == nil || viewModel.isLoading)
-			}
-			.navigationTitle("New Post")
-			.navigationBarTitleDisplayMode(.inline)
-			// --- iOS 16 COMPATIBLE ONCHANGE ---
-			.onChange(of: viewModel.didUpload) { newValue in
-				if newValue == true {
-					dismiss()
+				.disabled(
+					viewModel.title.isEmpty ||
+					viewModel.isLoading ||
+					(viewModel.postType == .sell && viewModel.postImage == nil)
+				)
+				
+				.navigationTitle("New Post")
+				.navigationBarTitleDisplayMode(.inline)
+				// --- iOS 16 COMPATIBLE ONCHANGE ---
+				.onChange(of: viewModel.didUpload) { newValue in
+					if newValue == true {
+						dismiss()
+					}
 				}
+				
+				// ----------------------------------
 			}
-			
-			// ----------------------------------
 		}
 	}
 }

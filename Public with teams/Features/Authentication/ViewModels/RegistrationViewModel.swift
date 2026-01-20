@@ -46,7 +46,7 @@ class RegistrationViewModel: ObservableObject {
 				university: university,
 				group: group,
 				phoneNumber: phoneNumber,
-				telegramHandle: cleanedTelegram // Passing the new telegram handle
+				telegramHandle: cleanedTelegram 
 			)
 			isLoading = false
 		} catch {

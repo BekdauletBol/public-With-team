@@ -4,8 +4,7 @@ import Supabase
 struct ContentView: View {
 	// 1. Tracks the first-time-ever greeting sequence
 	@AppStorage("hasSeenHello") var hasSeenHello: Bool = false
-	
-	
+		
 	// 2. We use @ObservedObject to watch the shared Auth Engine
 	@ObservedObject private var authService = AuthService.shared
 	

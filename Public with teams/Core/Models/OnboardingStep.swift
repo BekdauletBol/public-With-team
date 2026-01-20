@@ -10,8 +10,8 @@ struct OnboardingView: View {
 	var body: some View {
 		
 		ZStack {
-			// BACKGROUND COLOR
 			
+			// BACKGROUND COLOR
 			Color("publicBackground")
 				.ignoresSafeArea()
 			
@@ -40,7 +40,7 @@ struct OnboardingView: View {
 						
 							// BUTTON COLORS
 							.background(Color("publicTextColor"))
-							.foregroundColor(Color(.white))
+							.foregroundColor(Color("ThemeColor"))
 							.cornerRadius(15)
 							.padding(.horizontal, 40)
 					}
