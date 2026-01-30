@@ -1,70 +1,82 @@
 import SwiftUI
 
+import SwiftUI
+
 struct FavoritesView: View {
-	@StateObject var viewModel = FavoritesViewModel()
+	@StateObject private var viewModel = FavoritesViewModel()
 	
 	var body: some View {
 		NavigationStack {
-			ScrollView {
+			ZStack {
+				Color.uniBackground.ignoresSafeArea()
 				
-				LazyVStack(spacing: 16) {
-					if viewModel.isLoading && viewModel.favoritePosts.isEmpty {
-						ProgressView()
-							.padding(.top, 50)
-					} else if viewModel.favoritePosts.isEmpty {
+				ScrollView {
+					VStack(alignment: .leading, spacing: 20) {
 						
-						// --- iOS 16 COMPATIBLE EMPTY STATE ---
-						VStack(spacing: 16) {
-							Image(systemName: "heart.slash")
-								.font(.system(size: 64))
-								.foregroundColor(.secondary)
+						VStack(alignment: .leading, spacing: 4) {
+							Text("LOCAL_ARCHIVE")
+								.font(.system(.caption, design: .monospaced))
+								.foregroundColor(.uniSecondaryText)
 							
-							Text("No Favorites")
-								.font(.title2.bold())
-							
-							Text("Double-tap photos in the feed to save them here.")
-								.font(.subheadline)
-								.foregroundColor(.secondary)
-								.multilineTextAlignment(.center)
+							Text("Saved Items")
+								.font(.system(size: 28, weight: .bold, design: .rounded))
+								.foregroundColor(.white)
 						}
-						.padding(.horizontal, 32)
-						.padding(.top, 100)
-						// --------------------------------------
-					} else {
-						ForEach(viewModel.favoritePosts) { post in
-							VStack(spacing: 8) {
-								// Display the post
-								PostCard(post: post) {
-									// Refresh the list if deleted from the card
-									Task { await viewModel.fetchFavorites() }
-								}
-								
-								// iOS 16 Compatible Remove Button
-								Button(role: .destructive) {
-									Task {
-										try? await PostService.unfavoritePost(postId: post.id)
-										await viewModel.fetchFavorites()
+						.padding(.horizontal)
+						.padding(.top, 10)
+
+						if viewModel.isLoading {
+							ProgressView()
+								.tint(.white)
+								.frame(maxWidth: .infinity, minHeight: 200)
+						} else if viewModel.favoritePosts.isEmpty {
+							emptyState
+						} else {
+							LazyVStack(spacing: 16) {
+								ForEach(viewModel.favoritePosts) { post in
+									PostCard(post: post) {
+										Task { await viewModel.fetchFavorites() }
 									}
-								} label: {
-									Label("Remove from Favorites", systemImage: "heart.slash")
-										.font(.subheadline.bold())
 								}
-								.padding(.bottom, 12)
-								
-								Divider()
 							}
+							.padding(.horizontal)
 						}
 					}
+					.padding(.bottom, 20)
 				}
-				.padding()
 			}
-			.navigationTitle("Favorites")
-			.task {
-				await viewModel.fetchFavorites()
-			}
+			.navigationBarTitleDisplayMode(.inline)
 			.refreshable {
 				await viewModel.fetchFavorites()
 			}
+			.task {
+				await viewModel.fetchFavorites()
+			}
 		}
+	}
+	
+	private var emptyState: some View {
+		VStack(spacing: 20) {
+			Spacer(minLength: 50)
+			
+			Image(systemName: "tray.and.arrow.down")
+				.font(.system(size: 40, weight: .ultraLight))
+				.foregroundColor(.uniBorder)
+			
+			VStack(spacing: 8) {
+				Text("NO_SAVED_DATA")
+					.font(.system(.subheadline, design: .monospaced))
+					.foregroundColor(.white)
+				
+				Text("Double tap a post to save it to your local archive.")
+					.font(.system(size: 13))
+					.foregroundColor(.uniSecondaryText)
+					.multilineTextAlignment(.center)
+			}
+			.padding(.horizontal, 40)
+			
+			Spacer()
+		}
+		.frame(maxWidth: .infinity)
 	}
 }

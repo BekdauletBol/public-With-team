@@ -1,55 +1,61 @@
 import SwiftUI
-
 struct LoginView: View {
 	@StateObject private var viewModel = LoginViewModel()
 	
 	var body: some View {
-		
 		NavigationStack {
-			VStack(spacing: 20) {
-				Text("public.")
-					.font(.largeTitle)
-					.fontWeight(.black)
+			ZStack {
+				Color.uniBackground.ignoresSafeArea()
 				
-					.foregroundColor(.uniPrimary)
-				
-				VStack(spacing: 12) {
-					TextField("Email", text: $viewModel.email)
-						.padding()
-						.background(Color(.systemGray6))
-						.cornerRadius(10)
-						.textInputAutocapitalization(.never)
-					
-					SecureField("Password", text: $viewModel.password)
-						.padding()
-						.background(Color(.systemGray6))
-						.cornerRadius(10)
-				}
-				.padding(.horizontal)
-				
-				Button {
-					Task { await viewModel.login() }
-				} label: {
-					if viewModel.isLoading {
-						ProgressView()
-							.tint(.white)
-					} else {
-						Text("Login")
-							.fontWeight(.bold)
+				VStack(spacing: 32) {
+					VStack(spacing: 8) {
+						Text("public.")
+							.font(.system(size: 42, weight: .bold, design: .rounded))
+							.foregroundColor(.white)
+						
+						Text("context for your campus")
+							.font(.system(.subheadline, design: .monospaced))
+							.foregroundColor(.uniSecondaryText)
 					}
-				}
-				.frame(maxWidth: .infinity)
-				.padding()
-				.background(Color.uniPrimary)
-				.foregroundColor(.white)
-				.cornerRadius(10)
-				.padding(.horizontal)
-				
-				NavigationLink {
-					RegistrationView()
-				} label: {
-					Text("Don't have an account? Sign Up")
-						.font(.footnote)
+					.padding(.top, 40)
+					
+					VStack(spacing: 16) {
+						customTextField("Email", text: $viewModel.email, isSecure: false)
+						customTextField("Password", text: $viewModel.password, isSecure: true)
+					}
+					.padding(.horizontal)
+					
+					VStack(spacing: 16) {
+						Button {
+							Task { await viewModel.login() }
+						} label: {
+							Group {
+								if viewModel.isLoading {
+									ProgressView().tint(.black)
+								} else {
+									Text("Login")
+										.font(.system(.body, design: .monospaced))
+										.fontWeight(.bold)
+								}
+							}
+							.frame(maxWidth: .infinity)
+							.padding(.vertical, 16)
+							.background(Color.white)
+							.foregroundColor(.black)
+							.cornerRadius(4)
+						}
+						
+						NavigationLink {
+							RegistrationView()
+						} label: {
+							Text("Don't have an account? Sign Up")
+								.font(.system(.footnote, design: .monospaced))
+								.foregroundColor(.uniSecondaryText)
+						}
+					}
+					.padding(.horizontal)
+					
+					Spacer()
 				}
 			}
 			.alert("Error", isPresented: $viewModel.showAlert) {
@@ -58,5 +64,25 @@ struct LoginView: View {
 				Text(viewModel.errorMessage ?? "Unknown Error")
 			}
 		}
+	}
+	
+	@ViewBuilder
+	private func customTextField(_ placeholder: String, text: Binding<String>, isSecure: Bool) -> some View {
+		Group {
+			if isSecure {
+				SecureField("", text: text, prompt: Text(placeholder).foregroundColor(.uniSecondaryText))
+			} else {
+				TextField("", text: text, prompt: Text(placeholder).foregroundColor(.uniSecondaryText))
+			}
+		}
+		.padding()
+		.background(Color.uniSurface)
+		.overlay(
+			RoundedRectangle(cornerRadius: 4)
+				.stroke(Color.uniBorder, lineWidth: 1)
+		)
+		.foregroundColor(.white)
+		.font(.system(.body, design: .monospaced))
+		.textInputAutocapitalization(.never)
 	}
 }

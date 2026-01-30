@@ -1,39 +1,59 @@
 import SwiftUI
 
 struct MainTabView: View {
+	
+	init() {
+		let appearance = UITabBarAppearance()
+		appearance.configureWithOpaqueBackground()
+		appearance.backgroundColor = UIColor(Color.uniBackground)
+		
+		appearance.shadowColor = UIColor(Color.uniBorder)
+		
+		let itemAppearance = UITabBarItemAppearance()
+		itemAppearance.normal.iconColor = UIColor(Color.uniSecondaryText)
+		itemAppearance.normal.titleTextAttributes = [
+			.font: UIFont.monospacedSystemFont(ofSize: 10, weight: .medium),
+			.foregroundColor: UIColor(Color.uniSecondaryText)
+		]
+		
+		itemAppearance.selected.iconColor = .white
+		itemAppearance.selected.titleTextAttributes = [
+			.font: UIFont.monospacedSystemFont(ofSize: 10, weight: .bold),
+			.foregroundColor: UIColor.white
+		]
+		
+		appearance.stackedLayoutAppearance = itemAppearance
+		appearance.inlineLayoutAppearance = itemAppearance
+		appearance.compactInlineLayoutAppearance = itemAppearance
+		
+		UITabBar.appearance().standardAppearance = appearance
+		if #available(iOS 15.0, *) {
+			UITabBar.appearance().scrollEdgeAppearance = appearance
+		}
+	}
+
 	var body: some View {
 		TabView {
-			
-			
-		
-			// TAB 1: MARKETPLACE
 			FeedView()
 				.tabItem {
-					Image(systemName: "house")
-					Text("Explore")
+					Label("Explore", systemImage: "terminal")
 				}
 			
-			// TAB 2: SAVED ITEMS
 			FavoritesView()
 				.tabItem {
-					Image(systemName: "heart.fill")
-					Text("Favorites")
+					Label("Saved", systemImage: "bookmark")
 				}
 			
-			// TAB 3: CREATE POST
 			UploadPostView()
 				.tabItem {
-					Image(systemName: "plus.circle.fill")
-					Text("Submit")
+					Label("Submit", systemImage: "plus.square")
 				}
 			
-			// TAB 4: PROFILE
 			ProfileView()
 				.tabItem {
-					Image(systemName: "person.fill")
-					Text("Profile")
+					Label("User", systemImage: "command")
 				}
 		}
-		.accentColor(.blue)
+		.accentColor(.white)
 	}
 }

@@ -4,102 +4,119 @@ struct PostCard: View {
 	let post: Post
 	var onDelete: (() -> Void)? = nil
 	
-	
 	@State private var isLiked = false
 	@State private var showDeleteConfirmation = false
-	@State private var animateHeart = false 
-	
+	@State private var animateHeart = false
 	
 	var body: some View {
-		VStack(alignment: .leading, spacing: 12) {
-			
-			ZStack {
+		VStack(alignment: .leading, spacing: 0) {
+			// Image Section
+			ZStack(alignment: .topTrailing) {
 				if let imageUrl = post.imageUrl, let url = URL(string: imageUrl) {
 					AsyncImage(url: url) { image in
 						image.resizable()
 							.scaledToFill()
-							.frame(height: 250)
-							.cornerRadius(12)
+							.frame(height: 220)
 					} placeholder: {
-						ProgressView().frame(height: 250).frame(maxWidth: .infinity)
+						Rectangle()
+							.fill(Color.uniSurface)
+							.frame(height: 220)
+							.overlay(ProgressView().tint(.white))
 					}
 					.clipped()
-					.contentShape(Rectangle())
-					.onTapGesture(count: 2) {
-						handleLike()
+					.onTapGesture(count: 2) { handleLike() }
+				}
+
+				// Тип объявления (Sell/Request) - в углу изображения
+				Text(post.type == .sell ? "SELL" : "REQUEST")
+					.font(.system(size: 10, weight: .bold, design: .monospaced))
+					.padding(.horizontal, 8)
+					.padding(.vertical, 4)
+					.background(post.type == .sell ? Color.green : Color.blue)
+					.foregroundColor(.black)
+					.padding(12)
+			}
+			
+			// Content Section
+			VStack(alignment: .leading, spacing: 12) {
+				HStack(alignment: .top) {
+					VStack(alignment: .leading, spacing: 4) {
+						Text(post.title)
+							.font(.system(.headline, design: .rounded))
+							.foregroundColor(.white)
+						
+						Text(post.description)
+							.font(.system(.subheadline))
+							.foregroundColor(.uniSecondaryText)
+							.lineLimit(2)
+					}
+					
+					Spacer()
+					
+					if String(post.ownerId).lowercased() == String(AuthService.shared.currentUser?.id ?? "").lowercased() {
+						Button { showDeleteConfirmation = true } label: {
+							Image(systemName: "xmark.square")
+								.foregroundColor(.red)
+								.font(.title3)
+						}
 					}
 				}
 				
-				// Animated Pop-up Heart
-				Image(systemName: "heart.fill")
-					.font(.system(size: 80))
-					.foregroundColor(.red)
-					.shadow(radius: 10)
-					.scaleEffect(animateHeart ? 1.0 : 0)
-					.opacity(animateHeart ? 1.0 : 0)
-			}
-			
-			// Info Section
-			VStack(alignment: .leading, spacing: 4) {
 				HStack {
-					Text(post.title).font(.headline)
+					Text(post.formattedPrice)
+						.font(.system(.title3, design: .monospaced))
+						.fontWeight(.bold)
+						.foregroundColor(.white)
+					
+					Spacer()
 					
 					if isLiked {
 						Image(systemName: "heart.fill")
 							.foregroundColor(.red)
 							.font(.caption)
 					}
-					
-					Spacer()
-					
-					if String(post.ownerId).lowercased() == String(AuthService.shared.currentUser?.id ?? "").lowercased() {
-						Button {
-							print("DEBUG: Trash icon tapped for post: \(post.title)")
-							showDeleteConfirmation = true
-						} label: {
-							Image(systemName: "trash")
-								.foregroundColor(.red)
-								.padding(8)
-								.background(Color.red.opacity(0.1))
-								.clipShape(Circle())
-						}
-						.buttonStyle(.plain)
+				}
+				
+				// Contact Buttons - Тонкие рамки
+				HStack(spacing: 8) {
+					if let phone = post.phoneNumber, !phone.isEmpty {
+						contactButton(title: "WhatsApp", icon: "message", url: "https://wa.me/\(phone.replacingOccurrences(of: "+", with: "").replacingOccurrences(of: " ", with: ""))")
 					}
 					
-					Text(post.type == .sell ? "SELL" : "REQUEST")
-						.font(.caption2).fontWeight(.bold).padding(5)
-						.background(post.type == .sell ? Color.green.opacity(0.1) : Color.blue.opacity(0.1))
-						.foregroundColor(post.type == .sell ? .green : .blue)
-						.cornerRadius(6)
+					if let telegram = post.telegramHandle, !telegram.isEmpty {
+						contactButton(title: "Telegram", icon: "paperplane", url: "https://t.me/\(telegram.replacingOccurrences(of: "@", with: ""))")
+					}
 				}
-				
-				Text(post.description).font(.subheadline).foregroundColor(.secondary).lineLimit(2)
-				Text(post.formattedPrice).font(.title3).fontWeight(.bold).foregroundColor(.primary)
+				.padding(.top, 4)
 			}
-			
-			//Contact Buttons
-			VStack(spacing: 8) {
-				if let phone = post.phoneNumber, !phone.isEmpty {
-					contactButton(title: "WhatsApp", icon: "message.fill", color: .green, url: "https://wa.me/\(phone.replacingOccurrences(of: "+", with: "").replacingOccurrences(of: " ", with: ""))")
-				}
-				
-				if let telegram = post.telegramHandle, !telegram.isEmpty {
-					contactButton(title: "Telegram", icon: "paperplane.fill", color: .blue, url: "https://t.me/\(telegram.replacingOccurrences(of: "@", with: ""))")
-				}
-			}
+			.padding(16)
 		}
-		.padding()
-		.background(Color(.systemBackground))
-		.cornerRadius(15)
-		.shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+		.background(Color.uniSurface)
+		.cornerRadius(4) // Минимум скруглений
+		.overlay(
+			RoundedRectangle(cornerRadius: 4)
+				.stroke(Color.uniBorder, lineWidth: 1)
+		)
 		.task { await checkIfLiked() }
-		.confirmationDialog("Delete Post?", isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
-			Button("Delete", role: .destructive) {
-				Task { try? await PostService.deletePost(postId: post.id); onDelete?() }
-			}
-		}
 	}
 	
+	private func contactButton(title: String, icon: String, url: String) -> some View {
+		Button {
+			if let link = URL(string: url) { UIApplication.shared.open(link) }
+		} label: {
+			HStack {
+				Image(systemName: icon)
+				Text(title).font(.system(size: 14, weight: .bold, design: .monospaced))
+			}
+			.frame(maxWidth: .infinity)
+			.padding(.vertical, 10)
+			.overlay(
+				RoundedRectangle(cornerRadius: 2)
+					.stroke(Color.uniBorder, lineWidth: 1)
+			)
+			.foregroundColor(.white)
+		}
+	}
 	
 	private func handleLike() {
 		Task {

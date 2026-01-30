@@ -37,12 +37,16 @@ struct RegistrationView: View {
 					if viewModel.isLoading {
 						ProgressView()
 					} else {
-						Text("Create Account").fontWeight(.bold)
+						Text("Create Account")
+							.font(.system(.body, design: .monospaced))
+							.fontWeight(.bold)
 					}
 				}
 				.frame(maxWidth: .infinity)
-				.listRowBackground(Color.uniPrimary)
-				.foregroundColor(.white)
+				.padding(.vertical, 16)
+				.background(Color.white)
+				.foregroundColor(.black)
+				.cornerRadius(4)
 			}
 		}
 		.navigationTitle("Join public.")
